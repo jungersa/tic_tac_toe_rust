@@ -82,6 +82,24 @@ impl Grid {
     const WIDTH: usize = 3;
     const SIZE: usize = Grid::WIDTH * Grid::WIDTH;
 
+    /// Creates a new `Grid` with the given list of `Cell`.
+    ///
+    /// If no list of `Cell` is provided, the default is a list of empty cells.
+    ///
+    /// # Arguments
+    ///
+    /// * `cells` - The list of cells size of Grid::SIZE.
+    ///
+    fn new(cells: Option<[Cell; Grid::SIZE]>) -> Self {
+        if let Some(cell) = cells {
+            Self { cells: cell }
+        } else {
+            Self {
+                cells: [Cell::new_empty(); Grid::SIZE],
+            }
+        }
+    }
+
     /// Returns the number of empty cells in the grid.
     fn empty_count(&self) -> usize {
         self.cells.iter().filter(|&cell| cell.is_vacant()).count()
@@ -262,6 +280,43 @@ mod tests {
                 ],
             };
             assert_eq!(grid.cross_count(), 2);
+        }
+
+        #[test]
+        fn test_new_with_cells() {
+            let cells = [
+                Cell::new_used(Mark::Cross),
+                Cell::new_used(Mark::Naught),
+                Cell::new_empty(),
+                Cell::new_used(Mark::Cross),
+                Cell::new_empty(),
+                Cell::new_empty(),
+                Cell::new_empty(),
+                Cell::new_empty(),
+                Cell::new_used(Mark::Naught),
+            ];
+            let grid = Grid::new(Some(cells));
+
+            assert_eq!(grid.cells.len(), 9);
+            assert_eq!(grid.cells[0].mark, Some(Mark::Cross));
+            assert_eq!(grid.cells[1].mark, Some(Mark::Naught));
+            assert_eq!(grid.cells[2].mark, None);
+            assert_eq!(grid.cells[3].mark, Some(Mark::Cross));
+            assert_eq!(grid.cells[4].mark, None);
+            assert_eq!(grid.cells[5].mark, None);
+            assert_eq!(grid.cells[6].mark, None);
+            assert_eq!(grid.cells[7].mark, None);
+            assert_eq!(grid.cells[8].mark, Some(Mark::Naught));
+        }
+
+        #[test]
+        fn test_new_without_cells() {
+            let grid = Grid::new(None);
+
+            assert_eq!(grid.cells.len(), 9);
+            for cell in grid.cells.iter() {
+                assert!(cell.is_vacant());
+            }
         }
     }
 }
