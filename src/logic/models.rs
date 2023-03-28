@@ -1,5 +1,5 @@
 /// Represents a mark on the board in a Tic Tac Toe game.
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 enum Mark {
     /// The mark representing a cross, which is denoted by the string "X".
     Cross,
@@ -8,7 +8,7 @@ enum Mark {
 }
 
 /// Represents a single cell on the Tic Tac Toe game board.
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 struct Cell {
     mark: Option<Mark>,
 }
