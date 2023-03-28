@@ -8,6 +8,7 @@ enum Mark {
 }
 
 /// Represents a single cell on the Tic Tac Toe game board.
+#[derive(Clone, Copy, Eq, PartialEq)]
 struct Cell {
     mark: Option<Mark>,
 }
@@ -22,6 +23,21 @@ impl std::fmt::Display for Mark {
 }
 
 impl Cell {
+    /// Create a new empty cell.
+    fn new_empty() -> Self {
+        Self { mark: None }
+    }
+
+    /// Creates a new `Cell` with a mark.
+    ///
+    /// # Arguments
+    ///
+    /// * `mark` - The mark which will be in the cell
+    ///
+    pub fn new_used(mark: Mark) -> Self {
+        Cell { mark: Some(mark) }
+    }
+
     /// Returns `true` if the cell is occupied by a mark, `false` otherwise.
     fn is_occupied(&self) -> bool {
         self.mark.is_some()
@@ -103,6 +119,24 @@ mod tests {
             };
             assert!(!occupied_by_naught.is_occupied_by(Mark::Cross));
             assert!(occupied_by_naught.is_occupied_by(Mark::Naught));
+        }
+
+        #[test]
+        fn test_new_empty() {
+            let cell = Cell::new_empty();
+            assert!(cell.is_vacant());
+        }
+
+        #[test]
+        fn test_new_occupied_cross() {
+            let cell = Cell::new_used(Mark::Cross);
+            assert!(cell.is_occupied_by(Mark::Cross));
+        }
+
+        #[test]
+        fn test_new_occupied_naught() {
+            let cell = Cell::new_used(Mark::Naught);
+            assert!(cell.is_occupied_by(Mark::Naught));
         }
     }
 }
