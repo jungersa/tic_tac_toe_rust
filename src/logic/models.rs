@@ -122,6 +122,39 @@ impl Grid {
     }
 }
 
+/// Represents the state of a Tic Tac Toe game.
+struct GameState {
+    /// The current state of the game board.
+    grid: Grid,
+    /// The mark of the player who goes first.
+    starting_mark: Mark,
+}
+
+impl GameState {
+    /// Creates a new `GameState` with the given `Grid` and starting `Mark`.
+    ///
+    /// If no starting `Mark` is provided, the default starting `Mark` is Mark::Cross.
+    ///
+    /// # Arguments
+    ///
+    /// * `grid` - The game board.
+    /// * `starting_mark` - The mark of the player who goes first.
+    ///
+    fn new(grid: Grid, starting_mark: Option<Mark>) -> Self {
+        if let Some(mark) = starting_mark {
+            Self {
+                grid,
+                starting_mark: mark,
+            }
+        } else {
+            Self {
+                grid,
+                starting_mark: Mark::Cross,
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -317,6 +350,24 @@ mod tests {
             for cell in grid.cells.iter() {
                 assert!(cell.is_vacant());
             }
+        }
+    }
+
+    mod gamestate {
+        use super::*;
+
+        #[test]
+        fn test_new_with_starting_mark() {
+            let grid = Grid::new(None);
+            let game_state = GameState::new(grid, Some(Mark::Naught));
+            assert_eq!(game_state.starting_mark, Mark::Naught);
+        }
+
+        #[test]
+        fn test_new_without_starting_mark() {
+            let grid = Grid::new(None);
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.starting_mark, Mark::Cross);
         }
     }
 }
