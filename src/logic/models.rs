@@ -72,6 +72,37 @@ impl Cell {
         }
     }
 }
+/// Represents the game board grid.
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+struct Grid {
+    cells: [Cell; Grid::SIZE],
+}
+
+impl Grid {
+    const WIDTH: usize = 3;
+    const SIZE: usize = Grid::WIDTH * Grid::WIDTH;
+
+    /// Returns the number of empty cells in the grid.
+    fn empty_count(&self) -> usize {
+        self.cells.iter().filter(|&cell| cell.is_vacant()).count()
+    }
+
+    /// Returns the number of cells which are naught in the grid.
+    fn naught_count(&self) -> usize {
+        self.cells
+            .iter()
+            .filter(|&cell| cell.is_occupied_by(Mark::Naught))
+            .count()
+    }
+
+    /// Returns the number of cells which are cross in the grid.
+    fn cross_count(&self) -> usize {
+        self.cells
+            .iter()
+            .filter(|&cell| cell.is_occupied_by(Mark::Naught))
+            .count()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -166,6 +197,71 @@ mod tests {
         fn test_new_occupied_naught() {
             let cell = Cell::new_used(Mark::Naught);
             assert!(cell.is_occupied_by(Mark::Naught));
+        }
+    }
+
+    mod grid {
+        use super::*;
+        #[test]
+        fn test_empty_count_full() {
+            let grid = Grid {
+                cells: [Cell::new_empty(); Grid::SIZE],
+            };
+            assert_eq!(grid.empty_count(), Grid::SIZE);
+        }
+
+        #[test]
+        fn test_empty_count() {
+            let grid = Grid {
+                cells: [
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Naught),
+                ],
+            };
+            assert_eq!(grid.empty_count(), 5);
+        }
+
+        #[test]
+        fn test_naught_count() {
+            let grid = Grid {
+                cells: [
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Naught),
+                ],
+            };
+            assert_eq!(grid.naught_count(), 2);
+        }
+
+        #[test]
+        fn test_cross_count() {
+            let grid = Grid {
+                cells: [
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Naught),
+                ],
+            };
+            assert_eq!(grid.cross_count(), 2);
         }
     }
 }
