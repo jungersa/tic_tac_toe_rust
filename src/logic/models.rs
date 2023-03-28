@@ -7,6 +7,16 @@ enum Mark {
     Naught,
 }
 
+impl Mark {
+    /// Returns a new instance of the enum with the opposite variant.
+    fn other(&self) -> Self {
+        match self {
+            Mark::Cross => Mark::Naught,
+            Mark::Naught => Mark::Cross,
+        }
+    }
+}
+
 /// Represents a single cell on the Tic Tac Toe game board.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 struct Cell {
@@ -66,6 +76,25 @@ impl Cell {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    mod mark {
+        use super::*;
+
+        #[test]
+        fn test_other_naught() {
+            let cross = Mark::Cross;
+            let naught = cross.other();
+            assert_eq!(naught, Mark::Naught);
+        }
+
+        #[test]
+        fn test_other_cross() {
+            let naught = Mark::Naught;
+            let cross = naught.other();
+            assert_eq!(cross, Mark::Cross);
+        }
+    }
+
     mod cell {
         use super::*;
         #[test]
