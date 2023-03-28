@@ -55,7 +55,7 @@ mod tests {
         #[test]
         fn test_is_vacant_empty() {
             let empty_cell = Cell { mark: None };
-            assert_eq!(empty_cell.is_vacant(), true);
+            assert!(empty_cell.is_vacant());
         }
 
         #[test]
@@ -63,13 +63,13 @@ mod tests {
             let occupied_cell = Cell {
                 mark: Some(Mark::Cross),
             };
-            assert_eq!(occupied_cell.is_vacant(), false);
+            assert!(!occupied_cell.is_vacant());
         }
 
         #[test]
         fn test_is_occupied_empty() {
             let empty_cell = Cell { mark: None };
-            assert_eq!(empty_cell.is_occupied(), false);
+            assert!(!empty_cell.is_occupied());
         }
 
         #[test]
@@ -77,14 +77,14 @@ mod tests {
             let occupied_cell = Cell {
                 mark: Some(Mark::Cross),
             };
-            assert_eq!(occupied_cell.is_occupied(), true);
+            assert!(occupied_cell.is_occupied());
         }
 
         #[test]
         fn test_is_occupied_by_empty() {
             let empty_cell = Cell { mark: None };
-            assert_eq!(empty_cell.is_occupied_by(Mark::Cross), false);
-            assert_eq!(empty_cell.is_occupied_by(Mark::Naught), false);
+            assert!(!empty_cell.is_occupied_by(Mark::Cross));
+            assert!(!empty_cell.is_occupied_by(Mark::Naught));
         }
 
         #[test]
@@ -92,8 +92,8 @@ mod tests {
             let occupied_by_cross = Cell {
                 mark: Some(Mark::Cross),
             };
-            assert_eq!(occupied_by_cross.is_occupied_by(Mark::Cross), true);
-            assert_eq!(occupied_by_cross.is_occupied_by(Mark::Naught), false);
+            assert!(occupied_by_cross.is_occupied_by(Mark::Cross));
+            assert!(!occupied_by_cross.is_occupied_by(Mark::Naught));
         }
 
         #[test]
@@ -101,8 +101,8 @@ mod tests {
             let occupied_by_naught = Cell {
                 mark: Some(Mark::Naught),
             };
-            assert_eq!(occupied_by_naught.is_occupied_by(Mark::Cross), false);
-            assert_eq!(occupied_by_naught.is_occupied_by(Mark::Naught), true);
+            assert!(!occupied_by_naught.is_occupied_by(Mark::Cross));
+            assert!(occupied_by_naught.is_occupied_by(Mark::Naught));
         }
     }
 }
