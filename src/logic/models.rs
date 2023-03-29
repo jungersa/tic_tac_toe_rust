@@ -123,6 +123,7 @@ impl Grid {
 }
 
 /// Represents the state of a Tic Tac Toe game.
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 struct GameState {
     /// The current state of the game board.
     grid: Grid,
@@ -281,6 +282,45 @@ impl GameState {
     fn tie(&self) -> bool {
         self.grid.empty_count() == 0 && self.winner_mark().is_none()
     }
+
+    /// Makes a move to the specified cell index and returns a new `Move` object.
+    ///
+    /// # Arguments
+    ///
+    /// * `cell_index` - The index of the cell where the move should be made.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` that contains either the `Move` object if the move is valid or an error message if the move is invalid.
+    fn make_move_to(&self, cell_index: usize) -> Result<Move, String> {
+        if self.grid.cells[cell_index].is_occupied() {
+            return Err(String::from("Cell is not empty"));
+        }
+
+        let mut new_cells = [Cell::new_empty(); Grid::SIZE];
+        new_cells[..cell_index].copy_from_slice(&self.grid.cells[..cell_index]);
+        new_cells[cell_index] = Cell::new_used(self.current_mark());
+        new_cells[cell_index + 1..].copy_from_slice(&self.grid.cells[cell_index + 1..]);
+
+        let new_grid = Grid::new(Some(new_cells));
+        let new_state = GameState::new(new_grid, Some(self.starting_mark));
+
+        Ok(Move {
+            mark: self.current_mark(),
+            cell_index,
+            before_state: self.clone(),
+            after_state: new_state,
+        })
+    }
+}
+
+/// Represents a move in a tic-tac-toe game.
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+struct Move {
+    mark: Mark,
+    cell_index: usize,
+    before_state: GameState,
+    after_state: GameState,
 }
 
 #[cfg(test)]
@@ -726,6 +766,39 @@ mod tests {
 
             assert_eq!(empty_game.tie(), false);
             assert_eq!(non_empty_game.tie(), true);
+        }
+
+        #[test]
+        fn test_make_move_to_empty_cell() {
+            let game = GameState::new(Grid::new(None), Some(Mark::Cross));
+            let result = game.make_move_to(0);
+            assert!(result.is_ok());
+            let mv = result.unwrap();
+            assert_eq!(mv.mark, Mark::Cross);
+            assert_eq!(mv.cell_index, 0);
+            assert_eq!(mv.before_state, game);
+            assert_eq!(mv.after_state.starting_mark, game.starting_mark);
+            assert_eq!(mv.after_state.grid.cells[0], Cell::new_used(Mark::Cross));
+        }
+
+        #[test]
+        fn test_make_move_to_occupied_cell() {
+            let cells = [
+                Cell::new_used(Mark::Cross),
+                Cell::new_empty(),
+                Cell::new_empty(),
+                Cell::new_used(Mark::Naught),
+                Cell::new_empty(),
+                Cell::new_used(Mark::Cross),
+                Cell::new_used(Mark::Naught),
+                Cell::new_empty(),
+                Cell::new_empty(),
+            ];
+            let game = GameState::new(Grid::new(Some(cells)), Some(Mark::Cross));
+            let result = game.make_move_to(0);
+            assert!(result.is_err());
+            let err = result.unwrap_err();
+            assert_eq!(err, "Cell is not empty");
         }
     }
 }
