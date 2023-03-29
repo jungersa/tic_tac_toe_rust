@@ -117,7 +117,7 @@ impl Grid {
     fn cross_count(&self) -> usize {
         self.cells
             .iter()
-            .filter(|&cell| cell.is_occupied_by(Mark::Naught))
+            .filter(|&cell| cell.is_occupied_by(Mark::Cross))
             .count()
     }
 }
@@ -285,7 +285,7 @@ mod tests {
                 cells: [
                     Cell::new_used(Mark::Cross),
                     Cell::new_used(Mark::Cross),
-                    Cell::new_empty(),
+                    Cell::new_used(Mark::Cross),
                     Cell::new_empty(),
                     Cell::new_empty(),
                     Cell::new_empty(),
@@ -299,20 +299,20 @@ mod tests {
 
         #[test]
         fn test_cross_count() {
-            let grid = Grid {
+            let mut grid = Grid {
                 cells: [
                     Cell::new_used(Mark::Cross),
                     Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
                     Cell::new_empty(),
                     Cell::new_empty(),
-                    Cell::new_empty(),
-                    Cell::new_empty(),
-                    Cell::new_empty(),
+                    Cell::new_used(Mark::Naught),
                     Cell::new_used(Mark::Naught),
                     Cell::new_used(Mark::Naught),
                 ],
             };
-            assert_eq!(grid.cross_count(), 2);
+            assert_eq!(grid.cross_count(), 4);
         }
 
         #[test]
