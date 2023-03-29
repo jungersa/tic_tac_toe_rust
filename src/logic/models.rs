@@ -153,6 +153,61 @@ impl GameState {
             }
         }
     }
+
+    /// Returns the current `Mark` of the player whose turn it is to make a move.
+    ///
+    /// The current mark is determined by checking the number of `naught`s and `cross`s in the `grid`.
+    /// If the number of `naught`s is equal to the number of `cross`s, the `starting_mark` is returned.
+    /// Otherwise, the other `Mark` is returned.
+    fn current_mark(&self) -> Mark {
+        if self.grid.naught_count() == self.grid.cross_count() {
+            return self.starting_mark;
+        }
+        return self.starting_mark.other();
+    }
+
+    /// Returns the winner's `Mark`, if there is one, otherwise returns `None`.
+    fn winner_mark(&self) -> Option<Mark> {
+        for mark in [Mark::Cross, Mark::Naught] {
+            // Check rows
+            for i in (0..Grid::SIZE).step_by(Grid::WIDTH) {
+                let row = &self.grid.cells[i..i + Grid::WIDTH];
+                if row.iter().all(|cell| cell.is_occupied_by(mark)) {
+                    return Some(mark);
+                }
+            }
+
+            // Check columns
+            for i in 0..Grid::SIZE {
+                let column = (i..Grid::SIZE).step_by(Grid::WIDTH);
+
+                if column
+                    .clone()
+                    .all(|j| self.grid.cells[j].is_occupied_by(mark))
+                {
+                    return Some(mark);
+                }
+            }
+
+            // Check diagonals
+            let diagonal1 = (0..Grid::SIZE).step_by(Grid::WIDTH + 1);
+            if diagonal1
+                .clone()
+                .all(|i| self.grid.cells[i].is_occupied_by(mark))
+            {
+                return Some(mark);
+            }
+
+            let diagonal2 = (Grid::WIDTH - 1..Grid::SIZE - 1).step_by(Grid::WIDTH - 1);
+            if diagonal2
+                .clone()
+                .all(|i| self.grid.cells[i].is_occupied_by(mark))
+            {
+                return Some(mark);
+            }
+        }
+        return None;
+    }
 }
 
 #[cfg(test)]
@@ -368,6 +423,78 @@ mod tests {
             let grid = Grid::new(None);
             let game_state = GameState::new(grid, None);
             assert_eq!(game_state.starting_mark, Mark::Cross);
+        }
+
+        #[test]
+        fn test_current_mark_none() {
+            let game_state = GameState::new(Grid::new(None), None);
+            assert_eq!(game_state.current_mark(), Mark::Cross);
+        }
+
+        #[test]
+        fn test_current_mark_starting_mark_cross() {
+            let game_state = GameState::new(Grid::new(None), Some(Mark::Cross));
+            assert_eq!(game_state.current_mark(), Mark::Cross);
+        }
+
+        #[test]
+        fn test_current_mark_starting_mark_naught() {
+            let game_state = GameState::new(Grid::new(None), Some(Mark::Naught));
+            assert_eq!(game_state.current_mark(), Mark::Naught);
+        }
+
+        #[test]
+        fn test_current_mark_starting_mark_cross_one_move() {
+            let mut game_state = GameState::new(Grid::new(None), Some(Mark::Cross));
+            game_state.grid.cells[0] = Cell::new_used(Mark::Cross);
+            assert_eq!(game_state.current_mark(), Mark::Naught);
+        }
+
+        #[test]
+        fn test_current_mark_starting_mark_naught_one_move() {
+            let mut game_state = GameState::new(Grid::new(None), Some(Mark::Naught));
+            game_state.grid.cells[0] = Cell::new_used(Mark::Naught);
+            assert_eq!(game_state.current_mark(), Mark::Cross);
+        }
+
+        #[test]
+        fn test_winner_mark_none() {
+            let grid = Grid::new(None);
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winner_mark(), None);
+        }
+
+        #[test]
+        fn test_winner_mark_row() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[0] = Cell::new_used(Mark::Cross);
+            cells[1] = Cell::new_used(Mark::Cross);
+            cells[2] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
+        }
+
+        #[test]
+        fn test_winner_mark_column() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[0] = Cell::new_used(Mark::Cross);
+            cells[3] = Cell::new_used(Mark::Cross);
+            cells[6] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
+        }
+
+        #[test]
+        fn test_winner_mark_diagonal() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[0] = Cell::new_used(Mark::Cross);
+            cells[4] = Cell::new_used(Mark::Cross);
+            cells[8] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
         }
     }
 }
