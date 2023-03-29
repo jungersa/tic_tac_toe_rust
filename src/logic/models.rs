@@ -171,14 +171,15 @@ impl GameState {
         for mark in [Mark::Cross, Mark::Naught] {
             // Check rows
             for i in (0..Grid::SIZE).step_by(Grid::WIDTH) {
-                let row = &self.grid.cells[i..i + Grid::WIDTH];
+                let idx = i..i + Grid::WIDTH;
+                let row = &self.grid.cells[idx];
                 if row.iter().all(|cell| cell.is_occupied_by(mark)) {
                     return Some(mark);
                 }
             }
 
             // Check columns
-            for i in 0..Grid::SIZE {
+            for i in 0..Grid::WIDTH {
                 let column = (i..Grid::SIZE).step_by(Grid::WIDTH);
 
                 if column
@@ -207,6 +208,63 @@ impl GameState {
             }
         }
         return None;
+    }
+
+    /// Returns the indexes of the winning cells for the given `Mark`.
+    fn winning_indexes(&self) -> Option<Vec<usize>> {
+        for mark in [Mark::Cross, Mark::Naught] {
+            let mut winning_indexes: Vec<usize> = Vec::new();
+
+            for i in (0..Grid::SIZE).step_by(Grid::WIDTH) {
+                // Check rows
+                let row = &self.grid.cells[i..i + Grid::WIDTH];
+                if row.iter().all(|cell| cell.is_occupied_by(mark)) {
+                    winning_indexes.extend(i..i + Grid::WIDTH);
+                    return Some(winning_indexes);
+                }
+            }
+
+            for i in 0..Grid::WIDTH {
+                // Check columns
+                let column = (i..Grid::SIZE).step_by(Grid::WIDTH);
+
+                if column
+                    .clone()
+                    .all(|j| self.grid.cells[j].is_occupied_by(mark))
+                {
+                    winning_indexes.extend(column);
+                    return Some(winning_indexes);
+                }
+            }
+
+            // Check diagonals
+            let diagonal1 = (0..Grid::SIZE).step_by(Grid::WIDTH + 1);
+            let winning_indexes_temp = diagonal1.clone();
+            if diagonal1
+                .clone()
+                .all(|i| self.grid.cells[i].is_occupied_by(mark))
+            {
+                println!("Testss");
+                println!("{:?}", diagonal1);
+                println!("{:?}", winning_indexes_temp);
+                winning_indexes.extend(winning_indexes_temp);
+                return Some(winning_indexes);
+            }
+
+            let diagonal2 = (Grid::WIDTH - 1..Grid::SIZE - 1).step_by(Grid::WIDTH - 1);
+            let winning_indexes_temp = diagonal2.clone();
+            if diagonal2
+                .clone()
+                .all(|i| self.grid.cells[i].is_occupied_by(mark))
+            {
+                println!("Testss");
+                println!("{:?}", diagonal2);
+                println!("{:?}", winning_indexes_temp);
+                winning_indexes.extend(winning_indexes_temp);
+                return Some(winning_indexes);
+            }
+        }
+        None
     }
 }
 
@@ -354,7 +412,7 @@ mod tests {
 
         #[test]
         fn test_cross_count() {
-            let mut grid = Grid {
+            let grid = Grid {
                 cells: [
                     Cell::new_used(Mark::Cross),
                     Cell::new_used(Mark::Cross),
@@ -495,6 +553,68 @@ mod tests {
             let grid = Grid::new(Some(cells));
             let game_state = GameState::new(grid, None);
             assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
+        }
+
+        #[test]
+        fn test_winner_mark_false() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[1] = Cell::new_used(Mark::Cross);
+            cells[4] = Cell::new_used(Mark::Cross);
+            cells[8] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winner_mark(), None);
+        }
+
+        #[test]
+        fn test_winner_cells_none() {
+            let grid = Grid::new(None);
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winning_indexes(), None);
+        }
+
+        #[test]
+        fn test_winner_cells_row() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[0] = Cell::new_used(Mark::Cross);
+            cells[1] = Cell::new_used(Mark::Cross);
+            cells[2] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winning_indexes(), Some(vec![0, 1, 2]));
+        }
+
+        #[test]
+        fn test_winner_cells_column() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[0] = Cell::new_used(Mark::Cross);
+            cells[3] = Cell::new_used(Mark::Cross);
+            cells[6] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winning_indexes(), Some(vec![0, 3, 6]));
+        }
+
+        #[test]
+        fn test_winner_cells_diagonal() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[0] = Cell::new_used(Mark::Cross);
+            cells[4] = Cell::new_used(Mark::Cross);
+            cells[8] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winning_indexes(), Some(vec![0, 4, 8]));
+        }
+
+        #[test]
+        fn test_winner_cells_false() {
+            let mut cells = [Cell::new_empty(); Grid::SIZE];
+            cells[1] = Cell::new_used(Mark::Cross);
+            cells[4] = Cell::new_used(Mark::Cross);
+            cells[8] = Cell::new_used(Mark::Cross);
+            let grid = Grid::new(Some(cells));
+            let game_state = GameState::new(grid, None);
+            assert_eq!(game_state.winning_indexes(), None);
         }
     }
 }
