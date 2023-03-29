@@ -1,6 +1,8 @@
+use super::validators;
+
 /// Represents a mark on the board in a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-enum Mark {
+pub(crate) enum Mark {
     /// The mark representing a cross, which is denoted by the string "X".
     Cross,
     /// The mark representing a naught, which is denoted by the string "O".
@@ -19,7 +21,7 @@ impl Mark {
 
 /// Represents a single cell on the Tic Tac Toe game board.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-struct Cell {
+pub(crate) struct Cell {
     mark: Option<Mark>,
 }
 
@@ -34,7 +36,7 @@ impl std::fmt::Display for Mark {
 
 impl Cell {
     /// Create a new empty cell.
-    fn new_empty() -> Self {
+    pub(crate) fn new_empty() -> Self {
         Self { mark: None }
     }
 
@@ -44,7 +46,7 @@ impl Cell {
     ///
     /// * `mark` - The mark which will be in the cell
     ///
-    pub fn new_marked(mark: Mark) -> Self {
+    pub(crate) fn new_marked(mark: Mark) -> Self {
         Cell { mark: Some(mark) }
     }
 
@@ -74,7 +76,7 @@ impl Cell {
 }
 /// Represents the game board grid.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-struct Grid {
+pub(crate) struct Grid {
     cells: [Cell; Grid::SIZE],
 }
 
@@ -90,7 +92,7 @@ impl Grid {
     ///
     /// * `cells` - The list of cells size of Grid::SIZE.
     ///
-    fn new(cells: Option<[Cell; Grid::SIZE]>) -> Self {
+    pub(crate) fn new(cells: Option<[Cell; Grid::SIZE]>) -> Self {
         if let Some(cell) = cells {
             Self { cells: cell }
         } else {
@@ -106,7 +108,7 @@ impl Grid {
     }
 
     /// Returns the number of cells which are naught in the grid.
-    fn naught_count(&self) -> usize {
+    pub(crate) fn naught_count(&self) -> usize {
         self.cells
             .iter()
             .filter(|&cell| cell.is_occupied_by(Mark::Naught))
@@ -114,7 +116,7 @@ impl Grid {
     }
 
     /// Returns the number of cells which are cross in the grid.
-    fn cross_count(&self) -> usize {
+    pub(crate) fn cross_count(&self) -> usize {
         self.cells
             .iter()
             .filter(|&cell| cell.is_occupied_by(Mark::Cross))
@@ -124,7 +126,7 @@ impl Grid {
 
 /// Represents the state of a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-struct GameState {
+pub(crate) struct GameState {
     /// The current state of the game board.
     grid: Grid,
     /// The mark of the player who goes first.
@@ -141,18 +143,22 @@ impl GameState {
     /// * `grid` - The game board.
     /// * `starting_mark` - The mark of the player who goes first.
     ///
-    fn new(grid: Grid, starting_mark: Option<Mark>) -> Self {
-        if let Some(mark) = starting_mark {
-            Self {
-                grid,
-                starting_mark: mark,
+    pub(crate) fn new(grid: Grid, starting_mark: Option<Mark>) -> Result<Self, String> {
+        let game_state = {
+            if let Some(mark) = starting_mark {
+                Self {
+                    grid,
+                    starting_mark: mark,
+                }
+            } else {
+                Self {
+                    grid,
+                    starting_mark: Mark::Cross,
+                }
             }
-        } else {
-            Self {
-                grid,
-                starting_mark: Mark::Cross,
-            }
-        }
+        };
+        validators::validate_game_state(&game_state)?;
+        Ok(game_state)
     }
 
     /// Returns the current `Mark` of the player whose turn it is to make a move.
@@ -168,7 +174,7 @@ impl GameState {
     }
 
     /// Returns the winner's `Mark`, if there is one, otherwise returns `None`.
-    fn winner_mark(&self) -> Option<Mark> {
+    pub(crate) fn winner_mark(&self) -> Option<Mark> {
         for mark in [Mark::Cross, Mark::Naught] {
             // Check rows
             for i in (0..Grid::SIZE).step_by(Grid::WIDTH) {
@@ -297,7 +303,10 @@ impl GameState {
         new_cells[cell_index + 1..].copy_from_slice(&self.grid.cells[cell_index + 1..]);
 
         let new_grid = Grid::new(Some(new_cells));
-        let new_state = GameState::new(new_grid, Some(self.starting_mark));
+        let new_state = match GameState::new(new_grid, Some(self.starting_mark)) {
+            Ok(state) => state,
+            Err(error) => return Err(error),
+        };
 
         Ok(Move {
             mark: self.current_mark(),
@@ -326,6 +335,14 @@ impl GameState {
             })
         }
         moves
+    }
+
+    pub(crate) fn grid(&self) -> &Grid {
+        &self.grid
+    }
+
+    pub(crate) fn starting_mark(&self) -> &Mark {
+        &self.starting_mark
     }
 }
 
@@ -542,45 +559,45 @@ mod tests {
         #[test]
         fn test_new_with_starting_mark() {
             let grid = Grid::new(None);
-            let game_state = GameState::new(grid, Some(Mark::Naught));
+            let game_state = GameState::new(grid, Some(Mark::Naught)).unwrap();
             assert_eq!(game_state.starting_mark, Mark::Naught);
         }
 
         #[test]
         fn test_new_without_starting_mark() {
             let grid = Grid::new(None);
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.starting_mark, Mark::Cross);
         }
 
         #[test]
         fn test_current_mark_none() {
-            let game_state = GameState::new(Grid::new(None), None);
+            let game_state = GameState::new(Grid::new(None), None).unwrap();
             assert_eq!(game_state.current_mark(), Mark::Cross);
         }
 
         #[test]
         fn test_current_mark_starting_mark_cross() {
-            let game_state = GameState::new(Grid::new(None), Some(Mark::Cross));
+            let game_state = GameState::new(Grid::new(None), Some(Mark::Cross)).unwrap();
             assert_eq!(game_state.current_mark(), Mark::Cross);
         }
 
         #[test]
         fn test_current_mark_starting_mark_naught() {
-            let game_state = GameState::new(Grid::new(None), Some(Mark::Naught));
+            let game_state = GameState::new(Grid::new(None), Some(Mark::Naught)).unwrap();
             assert_eq!(game_state.current_mark(), Mark::Naught);
         }
 
         #[test]
         fn test_current_mark_starting_mark_cross_one_move() {
-            let mut game_state = GameState::new(Grid::new(None), Some(Mark::Cross));
+            let mut game_state = GameState::new(Grid::new(None), Some(Mark::Cross)).unwrap();
             game_state.grid.cells[0] = Cell::new_marked(Mark::Cross);
             assert_eq!(game_state.current_mark(), Mark::Naught);
         }
 
         #[test]
         fn test_current_mark_starting_mark_naught_one_move() {
-            let mut game_state = GameState::new(Grid::new(None), Some(Mark::Naught));
+            let mut game_state = GameState::new(Grid::new(None), Some(Mark::Naught)).unwrap();
             game_state.grid.cells[0] = Cell::new_marked(Mark::Naught);
             assert_eq!(game_state.current_mark(), Mark::Cross);
         }
@@ -588,7 +605,7 @@ mod tests {
         #[test]
         fn test_winner_mark_none() {
             let grid = Grid::new(None);
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winner_mark(), None);
         }
 
@@ -598,8 +615,11 @@ mod tests {
             cells[0] = Cell::new_marked(Mark::Cross);
             cells[1] = Cell::new_marked(Mark::Cross);
             cells[2] = Cell::new_marked(Mark::Cross);
+
+            cells[3] = Cell::new_marked(Mark::Naught);
+            cells[4] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
         }
 
@@ -609,8 +629,11 @@ mod tests {
             cells[0] = Cell::new_marked(Mark::Cross);
             cells[3] = Cell::new_marked(Mark::Cross);
             cells[6] = Cell::new_marked(Mark::Cross);
+
+            cells[7] = Cell::new_marked(Mark::Naught);
+            cells[8] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
         }
 
@@ -620,8 +643,12 @@ mod tests {
             cells[0] = Cell::new_marked(Mark::Cross);
             cells[4] = Cell::new_marked(Mark::Cross);
             cells[8] = Cell::new_marked(Mark::Cross);
+
+
+            cells[7] = Cell::new_marked(Mark::Naught);
+            cells[6] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winner_mark(), Some(Mark::Cross));
         }
 
@@ -631,15 +658,18 @@ mod tests {
             cells[1] = Cell::new_marked(Mark::Cross);
             cells[4] = Cell::new_marked(Mark::Cross);
             cells[8] = Cell::new_marked(Mark::Cross);
+
+            cells[7] = Cell::new_marked(Mark::Naught);
+            cells[6] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winner_mark(), None);
         }
 
         #[test]
         fn test_winner_cells_none() {
             let grid = Grid::new(None);
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winning_indexes(), None);
         }
 
@@ -649,8 +679,11 @@ mod tests {
             cells[0] = Cell::new_marked(Mark::Cross);
             cells[1] = Cell::new_marked(Mark::Cross);
             cells[2] = Cell::new_marked(Mark::Cross);
+
+            cells[3] = Cell::new_marked(Mark::Naught);
+            cells[4] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winning_indexes(), Some(vec![0, 1, 2]));
         }
 
@@ -660,8 +693,11 @@ mod tests {
             cells[0] = Cell::new_marked(Mark::Cross);
             cells[3] = Cell::new_marked(Mark::Cross);
             cells[6] = Cell::new_marked(Mark::Cross);
+
+            cells[7] = Cell::new_marked(Mark::Naught);
+            cells[8] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winning_indexes(), Some(vec![0, 3, 6]));
         }
 
@@ -671,8 +707,11 @@ mod tests {
             cells[0] = Cell::new_marked(Mark::Cross);
             cells[4] = Cell::new_marked(Mark::Cross);
             cells[8] = Cell::new_marked(Mark::Cross);
+
+            cells[7] = Cell::new_marked(Mark::Naught);
+            cells[6] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winning_indexes(), Some(vec![0, 4, 8]));
         }
 
@@ -682,14 +721,17 @@ mod tests {
             cells[1] = Cell::new_marked(Mark::Cross);
             cells[4] = Cell::new_marked(Mark::Cross);
             cells[8] = Cell::new_marked(Mark::Cross);
+
+            cells[7] = Cell::new_marked(Mark::Naught);
+            cells[6] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
-            let game_state = GameState::new(grid, None);
+            let game_state = GameState::new(grid, None).unwrap();
             assert_eq!(game_state.winning_indexes(), None);
         }
 
         #[test]
         fn test_game_not_started() {
-            let empty_game = GameState::new(Grid::new(None), None);
+            let empty_game = GameState::new(Grid::new(None), None).unwrap();
             let non_empty_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Cross),
@@ -703,7 +745,7 @@ mod tests {
                     Cell::new_empty(),
                 ])),
                 None,
-            );
+            ).unwrap();
 
             assert!(empty_game.game_not_started());
             assert!(!non_empty_game.game_not_started());
@@ -711,7 +753,7 @@ mod tests {
 
         #[test]
         fn test_game_over() {
-            let empty_game = GameState::new(Grid::new(None), None);
+            let empty_game = GameState::new(Grid::new(None), None).unwrap();
             let tie_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Cross),
@@ -725,35 +767,35 @@ mod tests {
                     Cell::new_marked(Mark::Naught),
                 ])),
                 None,
-            );
+            ).unwrap();
             let cross_wins_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Cross),
                     Cell::new_marked(Mark::Cross),
                     Cell::new_marked(Mark::Cross),
-                    Cell::new_empty(),
-                    Cell::new_empty(),
+                    Cell::new_marked(Mark::Naught),
+                    Cell::new_marked(Mark::Naught),
                     Cell::new_empty(),
                     Cell::new_empty(),
                     Cell::new_empty(),
                     Cell::new_empty(),
                 ])),
                 None,
-            );
+            ).unwrap();
             let naught_wins_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Naught),
-                    Cell::new_empty(),
+                    Cell::new_marked(Mark::Cross),
                     Cell::new_empty(),
                     Cell::new_empty(),
                     Cell::new_marked(Mark::Naught),
+                    Cell::new_marked(Mark::Cross),
                     Cell::new_empty(),
-                    Cell::new_empty(),
-                    Cell::new_empty(),
+                    Cell::new_marked(Mark::Cross),
                     Cell::new_marked(Mark::Naught),
                 ])),
                 None,
-            );
+            ).unwrap();
 
             assert!(!empty_game.game_over());
             assert!(tie_game.game_over());
@@ -763,7 +805,7 @@ mod tests {
 
         #[test]
         fn test_tie() {
-            let empty_game = GameState::new(Grid::new(None), None);
+            let empty_game = GameState::new(Grid::new(None), None).unwrap();
             let non_empty_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Cross),
@@ -777,7 +819,7 @@ mod tests {
                     Cell::new_marked(Mark::Naught),
                 ])),
                 None,
-            );
+            ).unwrap();
 
             assert!(!empty_game.tie());
             assert!(non_empty_game.tie());
@@ -785,7 +827,7 @@ mod tests {
 
         #[test]
         fn test_make_move_to_empty_cell() {
-            let game = GameState::new(Grid::new(None), Some(Mark::Cross));
+            let game = GameState::new(Grid::new(None), Some(Mark::Cross)).unwrap();
             let result = game.make_move_to(0);
             assert!(result.is_ok());
             let mv = result.unwrap();
@@ -809,7 +851,7 @@ mod tests {
                 Cell::new_empty(),
                 Cell::new_empty(),
             ];
-            let game = GameState::new(Grid::new(Some(cells)), Some(Mark::Cross));
+            let game = GameState::new(Grid::new(Some(cells)), Some(Mark::Cross)).unwrap();
             let result = game.make_move_to(0);
             assert!(result.is_err());
             let err = result.unwrap_err();
@@ -818,7 +860,7 @@ mod tests {
 
         #[test]
         fn test_possible_moves_empty_game() {
-            let game = GameState::new(Grid::new(None), None);
+            let game = GameState::new(Grid::new(None), None).unwrap();
             let moves = game.possible_moves();
             assert_eq!(moves.len(), 9);
         }
@@ -836,7 +878,7 @@ mod tests {
                 Cell::new_marked(Mark::Naught),
                 Cell::new_empty(),
             ]));
-            let game = GameState::new(grid, Some(Mark::Cross));
+            let game = GameState::new(grid, Some(Mark::Cross)).unwrap();
             let moves = game.possible_moves();
             assert_eq!(moves.len(), 5);
         }
@@ -852,9 +894,9 @@ mod tests {
                 Cell::new_marked(Mark::Naught),
                 Cell::new_marked(Mark::Naught),
                 Cell::new_marked(Mark::Cross),
-                Cell::new_marked(Mark::Naught),
+                Cell::new_marked(Mark::Cross),
             ]));
-            let game = GameState::new(grid, Some(Mark::Cross));
+            let game = GameState::new(grid, Some(Mark::Cross)).unwrap();
             let moves = game.possible_moves();
             assert!(moves.is_empty());
         }
