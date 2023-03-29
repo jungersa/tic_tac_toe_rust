@@ -266,6 +266,21 @@ impl GameState {
         }
         None
     }
+
+    /// Returns `true` if the game has not started, `false` otherwise.
+    fn game_not_started(&self) -> bool {
+        self.grid.empty_count() == 9
+    }
+
+    /// Returns `true` if the game is over, `false` otherwise.
+    fn game_over(&self) -> bool {
+        self.winner_mark().is_some() || self.tie()
+    }
+
+    /// Returns `true` if the game is over in a tie, `false` otherwise.
+    fn tie(&self) -> bool {
+        self.grid.empty_count() == 0 && self.winner_mark().is_none()
+    }
 }
 
 #[cfg(test)]
@@ -615,6 +630,102 @@ mod tests {
             let grid = Grid::new(Some(cells));
             let game_state = GameState::new(grid, None);
             assert_eq!(game_state.winning_indexes(), None);
+        }
+
+        #[test]
+        fn test_game_not_started() {
+            let empty_game = GameState::new(Grid::new(None), None);
+            let non_empty_game = GameState::new(
+                Grid::new(Some([
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                ])),
+                None,
+            );
+
+            assert_eq!(empty_game.game_not_started(), true);
+            assert_eq!(non_empty_game.game_not_started(), false);
+        }
+
+        #[test]
+        fn test_game_over() {
+            let empty_game = GameState::new(Grid::new(None), None);
+            let tie_game = GameState::new(
+                Grid::new(Some([
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                ])),
+                None,
+            );
+            let cross_wins_game = GameState::new(
+                Grid::new(Some([
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                ])),
+                None,
+            );
+            let naught_wins_game = GameState::new(
+                Grid::new(Some([
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_empty(),
+                    Cell::new_used(Mark::Naught),
+                ])),
+                None,
+            );
+
+            assert_eq!(empty_game.game_over(), false);
+            assert_eq!(tie_game.game_over(), true);
+            assert_eq!(cross_wins_game.game_over(), true);
+            assert_eq!(naught_wins_game.game_over(), true);
+        }
+
+        #[test]
+        fn test_tie() {
+            let empty_game = GameState::new(Grid::new(None), None);
+            let non_empty_game = GameState::new(
+                Grid::new(Some([
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                    Cell::new_used(Mark::Cross),
+                    Cell::new_used(Mark::Naught),
+                ])),
+                None,
+            );
+
+            assert_eq!(empty_game.tie(), false);
+            assert_eq!(non_empty_game.tie(), true);
         }
     }
 }
