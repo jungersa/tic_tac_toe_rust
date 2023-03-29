@@ -164,7 +164,7 @@ impl GameState {
         if self.grid.naught_count() == self.grid.cross_count() {
             return self.starting_mark;
         }
-        return self.starting_mark.other();
+        self.starting_mark.other()
     }
 
     /// Returns the winner's `Mark`, if there is one, otherwise returns `None`.
@@ -208,7 +208,7 @@ impl GameState {
                 return Some(mark);
             }
         }
-        return None;
+        None
     }
 
     /// Returns the indexes of the winning cells for the given `Mark`.
@@ -245,9 +245,6 @@ impl GameState {
                 .clone()
                 .all(|i| self.grid.cells[i].is_occupied_by(mark))
             {
-                println!("Testss");
-                println!("{:?}", diagonal1);
-                println!("{:?}", winning_indexes_temp);
                 winning_indexes.extend(winning_indexes_temp);
                 return Some(winning_indexes);
             }
@@ -258,9 +255,6 @@ impl GameState {
                 .clone()
                 .all(|i| self.grid.cells[i].is_occupied_by(mark))
             {
-                println!("Testss");
-                println!("{:?}", diagonal2);
-                println!("{:?}", winning_indexes_temp);
                 winning_indexes.extend(winning_indexes_temp);
                 return Some(winning_indexes);
             }
@@ -308,7 +302,7 @@ impl GameState {
         Ok(Move {
             mark: self.current_mark(),
             cell_index,
-            before_state: self.clone(),
+            before_state: *self,
             after_state: new_state,
         })
     }
@@ -690,8 +684,8 @@ mod tests {
                 None,
             );
 
-            assert_eq!(empty_game.game_not_started(), true);
-            assert_eq!(non_empty_game.game_not_started(), false);
+            assert!(empty_game.game_not_started());
+            assert!(!non_empty_game.game_not_started());
         }
 
         #[test]
@@ -740,10 +734,10 @@ mod tests {
                 None,
             );
 
-            assert_eq!(empty_game.game_over(), false);
-            assert_eq!(tie_game.game_over(), true);
-            assert_eq!(cross_wins_game.game_over(), true);
-            assert_eq!(naught_wins_game.game_over(), true);
+            assert!(!empty_game.game_over());
+            assert!(tie_game.game_over());
+            assert!(cross_wins_game.game_over());
+            assert!(naught_wins_game.game_over());
         }
 
         #[test]
@@ -764,8 +758,8 @@ mod tests {
                 None,
             );
 
-            assert_eq!(empty_game.tie(), false);
-            assert_eq!(non_empty_game.tie(), true);
+            assert!(!empty_game.tie());
+            assert!(non_empty_game.tie());
         }
 
         #[test]
