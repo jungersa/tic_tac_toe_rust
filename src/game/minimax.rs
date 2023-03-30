@@ -39,7 +39,7 @@ fn minimax(move_: &Move, maximized_player: Mark, choose_highest_score: bool) -> 
         minimax(&move_, maximized_player, !choose_highest_score)
     });
     // println!("{:#?}", scores);
-    return if choose_highest_score {
+    if choose_highest_score {
         scores.max().unwrap()
     } else {
         scores.min().unwrap()
