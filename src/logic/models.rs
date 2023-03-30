@@ -166,7 +166,7 @@ impl GameState {
     /// The current mark is determined by checking the number of `naught`s and `cross`s in the `grid`.
     /// If the number of `naught`s is equal to the number of `cross`s, the `starting_mark` is returned.
     /// Otherwise, the other `Mark` is returned.
-    fn current_mark(&self) -> Mark {
+    pub(crate) fn current_mark(&self) -> Mark {
         if self.grid.naught_count() == self.grid.cross_count() {
             return self.starting_mark;
         }
@@ -274,7 +274,7 @@ impl GameState {
     }
 
     /// Returns `true` if the game is over, `false` otherwise.
-    fn game_over(&self) -> bool {
+    pub(crate) fn game_over(&self) -> bool {
         self.winner_mark().is_some() || self.tie()
     }
 
@@ -348,7 +348,7 @@ impl GameState {
 
 /// Represents a move in a tic-tac-toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-struct Move {
+pub(crate) struct Move {
     mark: Mark,
     cell_index: usize,
     before_state: GameState,
@@ -644,7 +644,6 @@ mod tests {
             cells[4] = Cell::new_marked(Mark::Cross);
             cells[8] = Cell::new_marked(Mark::Cross);
 
-
             cells[7] = Cell::new_marked(Mark::Naught);
             cells[6] = Cell::new_marked(Mark::Naught);
             let grid = Grid::new(Some(cells));
@@ -745,7 +744,8 @@ mod tests {
                     Cell::new_empty(),
                 ])),
                 None,
-            ).unwrap();
+            )
+            .unwrap();
 
             assert!(empty_game.game_not_started());
             assert!(!non_empty_game.game_not_started());
@@ -767,7 +767,8 @@ mod tests {
                     Cell::new_marked(Mark::Naught),
                 ])),
                 None,
-            ).unwrap();
+            )
+            .unwrap();
             let cross_wins_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Cross),
@@ -781,7 +782,8 @@ mod tests {
                     Cell::new_empty(),
                 ])),
                 None,
-            ).unwrap();
+            )
+            .unwrap();
             let naught_wins_game = GameState::new(
                 Grid::new(Some([
                     Cell::new_marked(Mark::Naught),
@@ -795,7 +797,8 @@ mod tests {
                     Cell::new_marked(Mark::Naught),
                 ])),
                 None,
-            ).unwrap();
+            )
+            .unwrap();
 
             assert!(!empty_game.game_over());
             assert!(tie_game.game_over());
@@ -819,7 +822,8 @@ mod tests {
                     Cell::new_marked(Mark::Naught),
                 ])),
                 None,
-            ).unwrap();
+            )
+            .unwrap();
 
             assert!(!empty_game.tie());
             assert!(non_empty_game.tie());
