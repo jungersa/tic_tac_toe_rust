@@ -359,14 +359,12 @@ impl GameState {
     }
 
     pub(crate) fn score(&self, maximized_player: Mark) -> Result<i32, String> {
-        if self.game_over(){
+        if self.game_over() {
             if self.tie() {
                 return Ok(0);
-            }
-            else if self.winner_mark() == Some(maximized_player) {
+            } else if self.winner_mark() == Some(maximized_player) {
                 return Ok(1);
-            }
-            else {
+            } else {
                 return Ok(-1);
             }
         }

@@ -2,7 +2,7 @@ use tic_tac_toe_rust::game::engine::TicTacToe;
 use tic_tac_toe_rust::game::minimax::MinimaxPlayer;
 use tic_tac_toe_rust::logic::models::Mark;
 
-use tic_tac_toe_rust::frontends::console::players::{ConsolePlayer};
+use tic_tac_toe_rust::frontends::console::players::ConsolePlayer;
 use tic_tac_toe_rust::frontends::console::renderers::ConsoleRenderer;
 
 fn main() {
