@@ -1,3 +1,3 @@
-pub mod logic;
-pub mod game;
 pub mod frontends;
+pub mod game;
+pub mod logic;

@@ -21,7 +21,7 @@ impl Renderer for ConsoleRenderer {
                         Some(indexes) => println!("The winning indexes are: {:?}", indexes),
                         None => todo!("No winning indexes"),
                     }
-                },
+                }
                 None => print!("No one wins this time"),
             }
         }

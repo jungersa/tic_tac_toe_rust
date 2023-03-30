@@ -1,4 +1,4 @@
-use crate::logic::models::{GameState, Mark, Grid};
+use crate::logic::models::{GameState, Grid, Mark};
 
 use super::players::Player;
 use super::renderers::Renderer;
@@ -49,7 +49,7 @@ impl<'a> TicTacToe<'a> {
                     if let Some(error_handler) = self.error_handler.as_ref() {
                         error_handler(err);
                     }
-                },
+                }
             }
         }
     }
