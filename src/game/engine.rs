@@ -5,7 +5,7 @@ use super::renderers::Renderer;
 
 type ErrorHandler = dyn Fn(String);
 
-struct TicTacToe<'a> {
+pub struct TicTacToe<'a> {
     player1: &'a dyn Player,
     player2: &'a dyn Player,
     renderer: &'a dyn Renderer,
@@ -13,7 +13,7 @@ struct TicTacToe<'a> {
 }
 
 impl<'a> TicTacToe<'a> {
-    fn new(
+    pub fn new(
         player1: &'a dyn Player,
         player2: &'a dyn Player,
         renderer: &'a dyn Renderer,
@@ -31,7 +31,7 @@ impl<'a> TicTacToe<'a> {
         })
     }
 
-    fn play(&self, starting_mark: Option<Mark>) {
+    pub fn play(&self, starting_mark: Option<Mark>) {
         let mut game_state = GameState::new(Grid::new(None), starting_mark).unwrap();
 
         loop {

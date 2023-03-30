@@ -46,20 +46,16 @@ fn validate_winner(
                 if grid.cross_count() <= grid.naught_count() {
                     return Err(String::from("Wrong winner mark"));
                 }
-            } else {
-                if grid.cross_count() != grid.naught_count() {
-                    return Err(String::from("Wrong winner mark"));
-                }
+            } else if grid.cross_count() != grid.naught_count() {
+                return Err(String::from("Wrong winner mark"));
             }
         } else if winner_mark == Mark::Naught {
             if starting_mark == &Mark::Naught {
                 if grid.naught_count() <= grid.cross_count() {
                     return Err(String::from("Wrong winner mark"));
                 }
-            } else {
-                if grid.naught_count() != grid.cross_count() {
-                    return Err(String::from("Wrong winner mark"));
-                }
+            } else if grid.naught_count() != grid.cross_count() {
+                return Err(String::from("Wrong winner mark"));
             }
         }
     }

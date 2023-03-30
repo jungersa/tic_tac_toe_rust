@@ -2,7 +2,7 @@ use super::validators;
 
 /// Represents a mark on the board in a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-pub(crate) enum Mark {
+pub enum Mark {
     /// The mark representing a cross, which is denoted by the string "X".
     Cross,
     /// The mark representing a naught, which is denoted by the string "O".
@@ -19,17 +19,26 @@ impl Mark {
     }
 }
 
+impl std::fmt::Display for Mark {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Mark::Cross => write!(f, "X"),
+            Mark::Naught => write!(f, "O"),
+        }
+    }
+}
+
 /// Represents a single cell on the Tic Tac Toe game board.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub(crate) struct Cell {
     mark: Option<Mark>,
 }
 
-impl std::fmt::Display for Mark {
+impl std::fmt::Display for Cell {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match *self {
-            Mark::Cross => write!(f, "X"),
-            Mark::Naught => write!(f, "O"),
+        match self.mark {
+            Some(mark) => mark.fmt(f),
+            None => write!(f, " "),
         }
     }
 }
@@ -76,7 +85,7 @@ impl Cell {
 }
 /// Represents the game board grid.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-pub(crate) struct Grid {
+pub struct Grid {
     cells: [Cell; Grid::SIZE],
 }
 
@@ -122,11 +131,15 @@ impl Grid {
             .filter(|&cell| cell.is_occupied_by(Mark::Cross))
             .count()
     }
+
+    pub(crate) fn cells(&self) -> &[Cell] {
+        &self.cells
+    }
 }
 
 /// Represents the state of a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-pub(crate) struct GameState {
+pub struct GameState {
     /// The current state of the game board.
     grid: Grid,
     /// The mark of the player who goes first.
@@ -218,7 +231,7 @@ impl GameState {
     }
 
     /// Returns the indexes of the winning cells for the given `Mark`.
-    fn winning_indexes(&self) -> Option<Vec<usize>> {
+    pub(crate) fn winning_indexes(&self) -> Option<Vec<usize>> {
         for mark in [Mark::Cross, Mark::Naught] {
             let mut winning_indexes: Vec<usize> = Vec::new();
 
@@ -269,7 +282,7 @@ impl GameState {
     }
 
     /// Returns `true` if the game has not started, `false` otherwise.
-    fn game_not_started(&self) -> bool {
+    pub(crate) fn game_not_started(&self) -> bool {
         self.grid.empty_count() == 9
     }
 
@@ -292,7 +305,7 @@ impl GameState {
     /// # Returns
     ///
     /// A `Result` that contains either the `Move` object if the move is valid or an error message if the move is invalid.
-    fn make_move_to(&self, cell_index: usize) -> Result<Move, String> {
+    pub(crate) fn make_move_to(&self, cell_index: usize) -> Result<Move, String> {
         if self.grid.cells[cell_index].is_occupied() {
             return Err(String::from("Cell is not empty"));
         }
@@ -323,7 +336,7 @@ impl GameState {
     /// # Returns
     ///
     /// A vector of `Move` structs, each representing a possible move in the game.
-    fn possible_moves(&self) -> Vec<Move> {
+    pub(crate) fn possible_moves(&self) -> Vec<Move> {
         let mut moves: Vec<Move> = Vec::new();
         if !self.game_over() {
             self.grid.cells.iter().enumerate().for_each(|(i, cell)| {
@@ -348,11 +361,33 @@ impl GameState {
 
 /// Represents a move in a tic-tac-toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
-pub(crate) struct Move {
+pub struct Move {
     mark: Mark,
     cell_index: usize,
     before_state: GameState,
     after_state: GameState,
+}
+
+impl Move {
+    /// Returns the mark of the move.
+    pub fn mark(&self) -> &Mark {
+        &self.mark
+    }
+
+    /// Returns the index of the cell where the move was made.
+    pub fn cell_index(&self) -> usize {
+        self.cell_index
+    }
+
+    /// Returns the after_state of the move.
+    pub fn before_state(&self) -> &GameState {
+        &self.before_state
+    }
+
+    /// Returns the after_state of the move.
+    pub fn after_state(&self) -> &GameState {
+        &self.after_state
+    }
 }
 
 #[cfg(test)]
