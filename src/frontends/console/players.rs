@@ -28,7 +28,7 @@ impl Player for ConsolePlayer {
 
             match input_string.trim().parse() {
                 Ok(input) => {
-                    if (1..9).contains(&input) {
+                    if (0..9).contains(&input) {
                         if let Ok(next_move) = game_state.make_move_to(input) {
                             return Some(next_move);
                         };

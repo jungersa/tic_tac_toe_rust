@@ -357,6 +357,21 @@ impl GameState {
     pub(crate) fn starting_mark(&self) -> &Mark {
         &self.starting_mark
     }
+
+    pub(crate) fn score(&self, maximized_player: Mark) -> Result<i32, String> {
+        if self.game_over(){
+            if self.tie() {
+                return Ok(0);
+            }
+            else if self.winner_mark() == Some(maximized_player) {
+                return Ok(1);
+            }
+            else {
+                return Ok(-1);
+            }
+        }
+        Err(String::from("Game is not over"))
+    }
 }
 
 /// Represents a move in a tic-tac-toe game.
