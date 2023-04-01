@@ -1,10 +1,14 @@
-use crate::logic::models::{GameState, Grid, Mark};
+//!    The TicTacToe struct represents a game of Tic Tac Toe that can be played by two players
+//!    and rendered with a renderer.
+
+use crate::logic::{GameState, Grid, Mark};
 
 use super::players::Player;
 use super::renderers::Renderer;
 
 type ErrorHandler = dyn Fn(String);
 
+/// TicTacToe game struct.
 pub struct TicTacToe<'a> {
     player1: &'a dyn Player,
     player2: &'a dyn Player,
@@ -13,6 +17,15 @@ pub struct TicTacToe<'a> {
 }
 
 impl<'a> TicTacToe<'a> {
+    /// Creates a new TicTacToe instance with two players, a renderer, and an optional error handler.
+    /// Returns a Result containing the TicTacToe instance or an error message.
+    ///
+    /// # Arguments
+    ///
+    /// * player1 - The first player.
+    /// * player2 - The second player.
+    /// * renderer - The renderer used to display the game.
+    /// * error_handler - An optional error handler function.
     pub fn new(
         player1: &'a dyn Player,
         player2: &'a dyn Player,
@@ -31,6 +44,11 @@ impl<'a> TicTacToe<'a> {
         })
     }
 
+    /// Plays a game of Tic Tac Toe using the current `TicTacToe` instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `starting_mark` - An optional starting mark for the game. If `None`, the starting mark is `Mark::Cross`.
     pub fn play(&self, starting_mark: Option<Mark>) {
         let mut game_state = GameState::new(Grid::new(None), starting_mark).unwrap();
 
@@ -54,6 +72,11 @@ impl<'a> TicTacToe<'a> {
         }
     }
 
+    /// Get the current player based on the current mark in the game state.
+    ///
+    /// # Arguments
+    ///
+    /// * `game_state` - The current game state.
     fn get_current_player(&self, game_state: &GameState) -> &'a dyn Player {
         if game_state.current_mark() == self.player1.get_mark() {
             self.player1

@@ -1,9 +1,9 @@
 use tic_tac_toe_rust::game::engine::TicTacToe;
-use tic_tac_toe_rust::game::minimax::MinimaxPlayer;
-use tic_tac_toe_rust::logic::models::Mark;
+use tic_tac_toe_rust::game::players::minimax::MinimaxPlayer;
+use tic_tac_toe_rust::logic::Mark;
 
-use tic_tac_toe_rust::frontends::console::players::ConsolePlayer;
-use tic_tac_toe_rust::frontends::console::renderers::ConsoleRenderer;
+use tic_tac_toe_rust::frontend::console::players::ConsolePlayer;
+use tic_tac_toe_rust::frontend::console::renderers::ConsoleRenderer;
 
 fn main() {
     let player1 = ConsolePlayer::new(Mark::Cross);

@@ -1,4 +1,7 @@
-use super::{cell::Cell, Mark};
+//! The `Grid` module contains the `Grid` struct and its methods.
+//! The `Grid` struct represents the game board grid.
+//! It contains a list of `Cell` of size `Grid::SIZE`.
+use crate::logic::{Cell, Mark};
 
 /// Represents the game board grid.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]

@@ -1,3 +1,7 @@
+//! The `Cell` struct represents a single cell on the Tic Tac Toe game board.
+//! It contains a mark, which can be either a cross or a naught.
+//! It can also be empty, which is represented by the absence of a mark.
+
 use super::mark::Mark;
 
 /// Represents a single cell on the Tic Tac Toe game board.

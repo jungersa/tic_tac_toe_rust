@@ -1,8 +1,4 @@
-pub use cell::Cell;
-pub use game_move::GameMove;
-pub use game_state::GameState;
-pub use grid::Grid;
-pub use mark::Mark;
+//! This module contains the models used by the logic module.
 
 pub mod cell;
 pub mod game_move;

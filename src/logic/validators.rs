@@ -1,7 +1,15 @@
-use super::models::{self, Mark};
+//! This module contains functions to validate game states.
+//! The functions in this module are used to validate the game state before the game starts.
+//! And they are used to validate the game state after each move.
+
+use super::{GameState, Grid, Mark};
 
 /// Validates a game state and returns an error message if the state is invalid.
-pub(crate) fn validate_game_state(game_state: &models::GameState) -> Result<(), String> {
+///
+/// # Arguments
+///
+/// * `game_state` - The game state to validate.
+pub(crate) fn validate_game_state(game_state: &GameState) -> Result<(), String> {
     validate_number_of_marks(game_state.grid())?;
     validate_starting_mark(game_state.grid(), game_state.starting_mark())?;
     validate_winner(
@@ -13,7 +21,15 @@ pub(crate) fn validate_game_state(game_state: &models::GameState) -> Result<(), 
 }
 
 /// Validates the number of marks in a game and returns an error message if the number is invalid.
-fn validate_number_of_marks(grid: &models::Grid) -> Result<(), String> {
+///
+/// The number of marks is invalid if:
+/// - The number of marks of the Cross mark is less than the number of marks of the Naught mark by more than 1.
+/// - The number of marks of the Naught mark is less than the number of marks of the Cross mark by more than 1.
+///
+/// # Arguments
+///
+/// * `grid` - The grid of the game.
+fn validate_number_of_marks(grid: &Grid) -> Result<(), String> {
     let cross_count = grid.cross_count();
     let naught_count = grid.naught_count();
     if cross_count.abs_diff(naught_count) > 1 {
@@ -23,11 +39,19 @@ fn validate_number_of_marks(grid: &models::Grid) -> Result<(), String> {
 }
 
 /// Validates the starting mark of a game and returns an error message if the mark is invalid.
-fn validate_starting_mark(grid: &models::Grid, starting_mark: &models::Mark) -> Result<(), String> {
+/// The starting mark is invalid if:
+/// - The number of marks of the starting mark is greater than the number of marks of the other mark.
+/// - The number of marks of the starting mark is less than the number of marks of the other mark by more than 1.
+///
+/// # Arguments
+///
+/// * `grid` - The grid of the game.
+/// * `starting_mark` - The starting mark of the game.
+fn validate_starting_mark(grid: &Grid, starting_mark: &Mark) -> Result<(), String> {
     let cross_count = grid.cross_count();
     let naught_count = grid.naught_count();
-    if (cross_count > naught_count && starting_mark == &models::Mark::Naught)
-        || (cross_count < naught_count && starting_mark == &models::Mark::Cross)
+    if (cross_count > naught_count && starting_mark == &Mark::Naught)
+        || (cross_count < naught_count && starting_mark == &Mark::Cross)
     {
         return Err(String::from("Wrong starting mark"));
     }
@@ -35,11 +59,17 @@ fn validate_starting_mark(grid: &models::Grid, starting_mark: &models::Mark) -> 
 }
 
 /// Validates the winner of a game and returns an error message if the winner is invalid.
-fn validate_winner(
-    grid: &models::Grid,
-    starting_mark: &models::Mark,
-    winner: Option<models::Mark>,
-) -> Result<(), String> {
+///
+/// The winner is invalid if:
+/// - The winner is not the starting mark and the number of marks of the winner is not greater than the number of marks of the other mark.
+/// - The winner is the starting mark and the number of marks of the winner is not greater than the number of marks of the other mark.
+///
+/// # Arguments
+///
+/// * `grid` - The grid of the game.
+/// * `starting_mark` - The starting mark of the game.
+/// * `winner` - The winner of the game.
+fn validate_winner(grid: &Grid, starting_mark: &Mark, winner: Option<Mark>) -> Result<(), String> {
     if let Some(winner_mark) = winner {
         if winner_mark == Mark::Cross {
             if starting_mark == &Mark::Cross {
@@ -64,7 +94,8 @@ fn validate_winner(
 
 #[cfg(test)]
 mod tests {
-    use crate::logic::models::{Cell, GameState, Grid};
+
+    use crate::logic::Cell;
 
     use super::*;
 

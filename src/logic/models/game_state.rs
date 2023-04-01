@@ -1,6 +1,8 @@
-use crate::logic::validators;
+//! The `GameState` struct and its methods.
+//! The `GameState` struct represents the state of a Tic Tac Toe game.
+//! It contains the current state of the game board, and the mark of the player who goes first
 
-use super::{Cell, GameMove, Grid, Mark};
+use crate::logic::{validators, Cell, GameMove, Grid, Mark};
 
 /// Represents the state of a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]

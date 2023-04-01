@@ -1,3 +1,6 @@
+//! The `Mark` enum represents a mark on the board in a Tic Tac Toe game.
+//! It can be either a cross or a naught.
+
 /// Represents a mark on the board in a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum Mark {

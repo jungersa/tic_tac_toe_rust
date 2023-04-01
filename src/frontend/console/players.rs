@@ -1,8 +1,7 @@
 use std::io;
 
 use crate::{
-    game::players::Player,
-    logic::models::{GameMove, GameState, Mark},
+    game::players::Player, logic::{GameState, GameMove, Mark},
 };
 
 pub struct ConsolePlayer {

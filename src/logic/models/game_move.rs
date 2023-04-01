@@ -1,4 +1,9 @@
-use super::{GameState, Mark};
+//! This module contains the `GameMove` struct.
+//! A `GameMove` represents a move in a tic-tac-toe game.
+//! It contains the mark of the move, the index of the cell where the move was made,
+//! the before_state of the game before the move was made, and the after_state of the game after the move was made.
+use crate::logic::{Mark, GameState};
+
 
 /// Represents a move in a tic-tac-toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
