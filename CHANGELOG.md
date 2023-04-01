@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2023-04-01
+### Changed
+
+- Change file structure to be more readable
 
 ## [0.2.0] - 2023-03-30
-### Added 
+### Added
 
 - Added Minimax Algorithm for a player
 
@@ -16,4 +20,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - The first version with one Computer Player, one Random Player, and one Console Renderer.
-
