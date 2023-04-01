@@ -1,5 +1,5 @@
 use crate::game::players::Player;
-use crate::logic::models::{GameState, Mark, GameMove};
+use crate::logic::models::{GameMove, GameState, Mark};
 
 pub struct MinimaxPlayer {
     mark: Mark,

@@ -1,4 +1,4 @@
-use super::models::{self, Cell, Mark};
+use super::models::{self, Mark};
 
 /// Validates a game state and returns an error message if the state is invalid.
 pub(crate) fn validate_game_state(game_state: &models::GameState) -> Result<(), String> {
@@ -64,7 +64,7 @@ fn validate_winner(
 
 #[cfg(test)]
 mod tests {
-    use crate::logic::models::{GameState, Grid};
+    use crate::logic::models::{Cell, GameState, Grid};
 
     use super::*;
 

@@ -1,4 +1,4 @@
-use super::{Mark, GameState};
+use super::{GameState, Mark};
 
 /// Represents a move in a tic-tac-toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
@@ -10,7 +10,12 @@ pub struct GameMove {
 }
 
 impl GameMove {
-    pub fn new(mark: Mark, cell_index: usize, before_state: GameState, after_state: GameState) -> Self {
+    pub fn new(
+        mark: Mark,
+        cell_index: usize,
+        before_state: GameState,
+        after_state: GameState,
+    ) -> Self {
         GameMove {
             mark,
             cell_index,

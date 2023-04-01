@@ -56,8 +56,8 @@ impl Cell {
     }
 }
 
+#[cfg(test)]
 mod tests {
-    use super::super::mark::Mark;
     use super::*;
 
     #[test]

@@ -1,4 +1,4 @@
-use crate::logic::models::{GameState, Mark, GameMove};
+use crate::logic::models::{GameMove, GameState, Mark};
 pub trait Player {
     fn make_move(&self, game_state: &GameState) -> Result<GameState, String> {
         if self.get_mark() == game_state.current_mark() {

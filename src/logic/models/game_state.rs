@@ -1,6 +1,6 @@
 use crate::logic::validators;
 
-use super::{Cell, Grid, Mark, GameMove};
+use super::{Cell, GameMove, Grid, Mark};
 
 /// Represents the state of a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
@@ -186,10 +186,12 @@ impl GameState {
             Err(error) => return Err(error),
         };
 
-        Ok(GameMove::new(mark: self.current_mark(),
-        cell_index,
-        before_state: *self,
-        after_state: new_state))
+        Ok(GameMove::new(
+            self.current_mark(),
+            cell_index,
+            *self,
+            new_state,
+        ))
     }
 
     /// Returns a vector of all possible moves for the current state of the game.
@@ -518,12 +520,12 @@ mod tests {
         let result = game.make_move_to(0);
         assert!(result.is_ok());
         let mv = result.unwrap();
-        assert_eq!(mv.mark, Mark::Cross);
-        assert_eq!(mv.cell_index, 0);
-        assert_eq!(mv.before_state, game);
-        assert_eq!(mv.after_state.starting_mark(), game.starting_mark());
+        assert_eq!(mv.mark(), &Mark::Cross);
+        assert_eq!(mv.cell_index(), 0);
+        assert_eq!(mv.before_state(), &game);
+        assert_eq!(mv.after_state().starting_mark(), game.starting_mark());
         assert_eq!(
-            mv.after_state.grid().cells()[0],
+            mv.after_state().grid().cells()[0],
             Cell::new_marked(Mark::Cross)
         );
     }
