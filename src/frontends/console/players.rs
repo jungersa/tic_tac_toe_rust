@@ -2,7 +2,7 @@ use std::io;
 
 use crate::{
     game::players::Player,
-    logic::models::{GameState, Mark, Move},
+    logic::models::{GameState, Mark, GameMove},
 };
 
 pub struct ConsolePlayer {
@@ -16,7 +16,7 @@ impl ConsolePlayer {
 }
 
 impl Player for ConsolePlayer {
-    fn get_move(&self, game_state: &GameState) -> Option<Move> {
+    fn get_move(&self, game_state: &GameState) -> Option<GameMove> {
         while !game_state.game_over() {
             let mut input_string = String::new();
 
@@ -61,7 +61,7 @@ impl DumbPlayer {
 }
 
 impl Player for DumbPlayer {
-    fn get_move(&self, game_state: &GameState) -> Option<Move> {
+    fn get_move(&self, game_state: &GameState) -> Option<GameMove> {
         let moves = game_state.possible_moves();
         if moves.is_empty() {
             return None;

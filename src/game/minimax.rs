@@ -1,5 +1,5 @@
 use crate::game::players::Player;
-use crate::logic::models::{GameState, Mark, Move};
+use crate::logic::models::{GameState, Mark, GameMove};
 
 pub struct MinimaxPlayer {
     mark: Mark,
@@ -12,7 +12,7 @@ impl MinimaxPlayer {
 }
 
 impl Player for MinimaxPlayer {
-    fn get_move(&self, game_state: &GameState) -> Option<Move> {
+    fn get_move(&self, game_state: &GameState) -> Option<GameMove> {
         find_best_move(game_state)
     }
 
@@ -21,7 +21,7 @@ impl Player for MinimaxPlayer {
     }
 }
 
-fn find_best_move(game_state: &GameState) -> Option<Move> {
+fn find_best_move(game_state: &GameState) -> Option<GameMove> {
     let maximized_player = game_state.current_mark();
     game_state
         .possible_moves()
@@ -29,7 +29,7 @@ fn find_best_move(game_state: &GameState) -> Option<Move> {
         .max_by_key(|move_| minimax(move_, maximized_player, false))
 }
 
-fn minimax(move_: &Move, maximized_player: Mark, choose_highest_score: bool) -> i32 {
+fn minimax(move_: &GameMove, maximized_player: Mark, choose_highest_score: bool) -> i32 {
     if move_.after_state().game_over() {
         return move_.after_state().score(maximized_player).unwrap();
     };

@@ -1,4 +1,4 @@
-use super::models::{self, Mark};
+use super::models::{self, Cell, Mark};
 
 /// Validates a game state and returns an error message if the state is invalid.
 pub(crate) fn validate_game_state(game_state: &models::GameState) -> Result<(), String> {
@@ -64,37 +64,39 @@ fn validate_winner(
 
 #[cfg(test)]
 mod tests {
+    use crate::logic::models::{GameState, Grid};
+
     use super::*;
 
     #[test]
     fn test_validate_number_of_marks_valid() {
-        let grid = models::Grid::new(Some([
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
+        let grid = Grid::new(Some([
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_empty(),
+            Cell::new_empty(),
         ]));
-        let game_state = models::GameState::new(grid, None).unwrap();
+        let game_state = GameState::new(grid, None).unwrap();
         assert!(validate_number_of_marks(game_state.grid()).is_ok());
     }
 
     #[test]
     fn test_validate_number_of_marks_fail() {
-        let grid = models::Grid::new(Some([
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
+        let grid = Grid::new(Some([
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_empty(),
+            Cell::new_empty(),
+            Cell::new_empty(),
         ]));
         assert_eq!(
             validate_number_of_marks(&grid),
@@ -104,54 +106,54 @@ mod tests {
 
     #[test]
     fn test_validate_starting_mark_valid() {
-        let grid = models::Grid::new(Some([
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
+        let grid = Grid::new(Some([
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_empty(),
         ]));
-        let game_state = models::GameState::new(grid, Some(models::Mark::Cross)).unwrap();
+        let game_state = GameState::new(grid, Some(Mark::Cross)).unwrap();
         assert!(validate_starting_mark(game_state.grid(), game_state.starting_mark()).is_ok());
     }
 
     #[test]
     fn test_validate_starting_mark_fail() {
-        let grid = models::Grid::new(Some([
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
+        let grid = Grid::new(Some([
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_empty(),
         ]));
         assert_eq!(
-            validate_starting_mark(&grid, &models::Mark::Naught),
+            validate_starting_mark(&grid, &Mark::Naught),
             Err(String::from("Wrong starting mark"))
         );
     }
 
     #[test]
     fn test_validate_winner_valid() {
-        let grid = models::Grid::new(Some([
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
+        let grid = Grid::new(Some([
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_empty(),
         ]));
-        let game_state = models::GameState::new(grid, Some(models::Mark::Naught)).unwrap();
+        let game_state = GameState::new(grid, Some(Mark::Naught)).unwrap();
         assert!(validate_winner(
             game_state.grid(),
             game_state.starting_mark(),
@@ -162,18 +164,18 @@ mod tests {
 
     #[test]
     fn test_validate_winner_fail() {
-        let grid = models::Grid::new(Some([
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Cross),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_marked(Mark::Naught),
-            models::Cell::new_empty(),
-            models::Cell::new_empty(),
+        let grid = Grid::new(Some([
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Cross),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_marked(Mark::Naught),
+            Cell::new_empty(),
+            Cell::new_empty(),
         ]));
-        let game_state = models::GameState::new(grid, Some(models::Mark::Naught)).unwrap();
+        let game_state = GameState::new(grid, Some(Mark::Naught)).unwrap();
         assert!(validate_winner(
             game_state.grid(),
             game_state.starting_mark(),
