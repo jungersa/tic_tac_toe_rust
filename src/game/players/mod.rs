@@ -1,6 +1,6 @@
 //! This module contains the Player trait and the implementations of the players.
 
-use crate::logic::{GameState, GameMove, Mark};
+use crate::logic::{GameMove, GameState, Mark};
 pub mod minimax;
 
 /// The Player trait defines the behavior of a player.

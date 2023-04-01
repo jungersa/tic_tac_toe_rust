@@ -8,6 +8,6 @@ pub mod players;
 pub mod renderers;
 
 pub use engine::TicTacToe;
-pub use players::Player;
 pub use players::minimax::MinimaxPlayer;
+pub use players::Player;
 pub use renderers::Renderer;

@@ -1,5 +1,6 @@
 use crate::{
-    game::renderers::Renderer, logic::{GameState, Grid},
+    game::renderers::Renderer,
+    logic::{GameState, Grid},
 };
 
 pub struct ConsoleRenderer;

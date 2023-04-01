@@ -3,7 +3,10 @@
 //! It works by recursively finding the best move for the maximized player and the best move for the minimized player.
 //! The maximized player is the player whose turn it is.
 //! The minimized player is the other player.
-use crate::{game::players::Player, logic::{GameState, GameMove, Mark}};
+use crate::{
+    game::players::Player,
+    logic::{GameMove, GameState, Mark},
+};
 
 /// A player that uses the minimax algorithm to find the best move.
 pub struct MinimaxPlayer {
