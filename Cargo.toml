@@ -10,3 +10,4 @@ categories = ["games", "development-tools::cargo-plugins"]
 readme = "README.md"
 
 [dependencies]
+clap = { version = "4.2.1", features = ["derive"] }
