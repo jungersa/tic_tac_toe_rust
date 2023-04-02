@@ -1,9 +1,6 @@
 use tic_tac_toe_rust::{
-    frontend::console::{
-        players::{ConsolePlayer, DumbPlayer},
-        renderers::ConsoleRenderer,
-    },
-    game::{MinimaxPlayer, Player, Renderer},
+    frontend::console::{players::ConsolePlayer, renderers::ConsoleRenderer},
+    game::{MinimaxPlayer, Player, Renderer, DumbPlayer},
     logic::Mark,
 };
 

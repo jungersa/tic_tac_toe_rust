@@ -9,5 +9,6 @@ pub mod renderers;
 
 pub use engine::TicTacToe;
 pub use players::minimax::MinimaxPlayer;
+pub use players::random::DumbPlayer;
 pub use players::Player;
 pub use renderers::Renderer;

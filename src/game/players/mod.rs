@@ -2,6 +2,7 @@
 
 use crate::logic::{GameMove, GameState, Mark};
 pub mod minimax;
+pub mod random;
 
 /// The Player trait defines the behavior of a player.
 /// A player trait has 3 methods:

@@ -1,3 +1,5 @@
+//! The player used in the cli
+
 use std::io;
 
 use crate::{
@@ -16,6 +18,12 @@ impl ConsolePlayer {
 }
 
 impl Player for ConsolePlayer {
+    /// Get the move from the player
+    /// Using the standard input
+    ///
+    /// # Arguments
+    ///
+    /// * game_state - The curent `GameState` of the game
     fn get_move(&self, game_state: &GameState) -> Option<GameMove> {
         while !game_state.game_over() {
             let mut input_string = String::new();
@@ -43,30 +51,6 @@ impl Player for ConsolePlayer {
             }
         }
         None
-    }
-
-    fn get_mark(&self) -> Mark {
-        self.mark
-    }
-}
-
-pub struct DumbPlayer {
-    mark: Mark,
-}
-
-impl DumbPlayer {
-    pub fn new(mark: Mark) -> Self {
-        DumbPlayer { mark }
-    }
-}
-
-impl Player for DumbPlayer {
-    fn get_move(&self, game_state: &GameState) -> Option<GameMove> {
-        let moves = game_state.possible_moves();
-        if moves.is_empty() {
-            return None;
-        }
-        Some(moves[0])
     }
 
     fn get_mark(&self) -> Mark {

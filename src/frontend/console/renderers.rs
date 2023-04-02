@@ -1,3 +1,4 @@
+//! The renderer which is used in the cli interface
 use crate::{
     game::renderers::Renderer,
     logic::{GameState, Grid},
@@ -6,6 +7,11 @@ use crate::{
 pub struct ConsoleRenderer;
 
 impl Renderer for ConsoleRenderer {
+    /// Render the game with the curent `GameState`
+    ///
+    /// # Arguments
+    ///
+    /// * game_state - the curent `GameState` which will be rendered
     fn render(&self, game_state: &GameState) {
         if game_state.game_not_started() {
             println!("Nice to see you play");
@@ -28,10 +34,16 @@ impl Renderer for ConsoleRenderer {
     }
 }
 
+/// Clear the terminal screen
 fn clear_screen() {
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
 }
 
+/// Print the grid to the standard output
+///
+/// # Arguments
+///
+/// * grid - The `Grid` to be printed on the terminal
 fn print_game(grid: &Grid) {
     let output = format!(
         r#"
