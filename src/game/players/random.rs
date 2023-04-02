@@ -1,4 +1,4 @@
-use crate::logic::{Mark, GameState, GameMove};
+use crate::logic::{GameMove, GameState, Mark};
 
 use super::Player;
 
