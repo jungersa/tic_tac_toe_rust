@@ -58,11 +58,11 @@ $ cargo fmt --all -- --check
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/jungersa/tic_tac_toe_rust/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Support
 
-If you encounter any issues while using the game, please open an issue on the GitHub repository. And if you have any questions, feel free to contact me on my github account. If you would like to contribute to the project, please read the [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) file.
+If you encounter any issues while using the game, please open an issue on the GitHub repository. And if you have any questions, feel free to contact me on my github account. If you would like to contribute to the project, please read the [CONTRIBUTING.md](https://github.com/jungersa/tic_tac_toe_rust/blob/master/CONTRIBUTING.md) file.
 
 ## Roadmap
 
