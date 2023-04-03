@@ -17,6 +17,8 @@ env:
 
 jobs:
   get-next-version:
+    permissions:
+      contents: write
     uses: semantic-release-action/next-release-version/.github/workflows/next-release-version.yml@v4
 
   # Compile native CLI binary
