@@ -6,7 +6,7 @@ description = "A simple tic tac toe game with a minimax ai"
 repository = "https://github.com/jungersa/tic_tac_toe_rust"
 license = "MIT"
 keywords = ["tic-tac-toe", "minimax", "ai", "cli"]
-categories = ["games", "development-tools::cargo-plugins"]
+categories = ["games"]
 readme = "README.md"
 
 [dependencies]
