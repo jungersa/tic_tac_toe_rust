@@ -13,6 +13,10 @@ concurrency:
 jobs:
   release:
     name: Release
+        permissions:
+      contents: write
+      issues: write
+      pull-request: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
