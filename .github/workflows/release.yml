@@ -3,20 +3,18 @@ name: Release
 on:
   workflow_dispatch:
 
-
 # Only allow one release workflow to execute at a time, since each release
 # workflow uses shared resources (git tags, package registries)
 concurrency:
   group: ${{ github.workflow }}
 
-
 jobs:
   release:
-    name: Release
-        permissions:
+    permissions:
       contents: write
       issues: write
-      pull-request: write
+      pull-requests: write
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
