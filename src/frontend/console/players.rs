@@ -2,8 +2,6 @@
 
 use std::io;
 
-use clap::builder::NonEmptyStringValueParser;
-
 use crate::{
     game::players::Player,
     logic::{GameMove, GameState, Mark},
@@ -59,7 +57,6 @@ impl Player for ConsolePlayer {
         self.mark
     }
 }
-
 
 fn coord_to_index(coord: &str) -> Option<usize> {
     let chars: Vec<char> = coord.chars().collect();
