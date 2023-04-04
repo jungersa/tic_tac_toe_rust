@@ -42,11 +42,13 @@ impl Player for ConsolePlayer {
                         };
                         println!("That cell is already occupied.");
                     } else {
-                        println!("Invalid input. Try again.");
+                        println!("Invalid input. Try again. ");
                     }
                 }
                 None => {
-                    println!("Invalid input. Try again.");
+                    println!(
+                        "Invalid input. Try again. The input shall be in the format A1 or 1A."
+                    );
                 }
             }
         }
