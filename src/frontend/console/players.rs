@@ -65,23 +65,12 @@ fn coord_to_index(coord: &str) -> Option<usize> {
     if chars.len() != 2 {
         return None;
     }
-    let row = match chars[0] {
-        'A' => 0,
-        'B' => 1,
-        'C' => 2,
-        '1' => 0,
-        '2' => 1,
-        '3' => 2,
+
+    let (col, row) = match (chars[0], chars[1]) {
+        ('A'..='C', '1'..='3') => (chars[0] as u8 - b'A', chars[1] as u8 - b'1'),
+        ('1'..='3', 'A'..='C') => (chars[1] as u8 - b'A', chars[0] as u8 - b'1'),
         _ => return None,
     };
-    let col = match chars[1] {
-        '1' => 0,
-        '2' => 1,
-        '3' => 2,
-        'A' => 0,
-        'B' => 1,
-        'C' => 2,
-        _ => return None,
-    };
-    Some(row * 3 + col)
+    print!("{} {} ", row, col);
+    Some(row as usize * 3 + col as usize)
 }
