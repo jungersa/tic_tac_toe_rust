@@ -11,3 +11,4 @@ readme = "README.md"
 
 [dependencies]
 clap = { version = "4.2.1", features = ["derive"] }
+thiserror = "1.0"
