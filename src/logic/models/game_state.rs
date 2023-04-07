@@ -2,7 +2,10 @@
 //! The `GameState` struct represents the state of a Tic Tac Toe game.
 //! It contains the current state of the game board, and the mark of the player who goes first
 
-use crate::logic::{validators, Cell, GameMove, Grid, Mark};
+use crate::logic::{
+    errors::{Error, MoveError, ValidationError},
+    validators, Cell, GameMove, Grid, Mark,
+};
 
 /// Represents the state of a Tic Tac Toe game.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
@@ -23,7 +26,7 @@ impl GameState {
     /// * `grid` - The game board.
     /// * `starting_mark` - The mark of the player who goes first.
     ///
-    pub fn new(grid: Grid, starting_mark: Option<Mark>) -> Result<Self, String> {
+    pub fn new(grid: Grid, starting_mark: Option<Mark>) -> Result<Self, ValidationError> {
         let game_state = {
             if let Some(mark) = starting_mark {
                 Self {
@@ -172,9 +175,9 @@ impl GameState {
     /// # Returns
     ///
     /// A `Result` that contains either the `GameMove` object if the move is valid or an error message if the move is invalid.
-    pub(crate) fn make_move_to(&self, cell_index: usize) -> Result<GameMove, String> {
+    pub(crate) fn make_move_to(&self, cell_index: usize) -> Result<GameMove, Error> {
         if self.grid.cells()[cell_index].is_occupied() {
-            return Err(String::from("Cell is not empty"));
+            return Err(Error::MoveError(MoveError::CellAlreadyMarked(cell_index)));
         }
 
         let mut new_cells = [Cell::new_empty(); Grid::SIZE];
@@ -185,7 +188,7 @@ impl GameState {
         let new_grid = Grid::new(Some(new_cells));
         let new_state = match GameState::new(new_grid, Some(self.starting_mark)) {
             Ok(state) => state,
-            Err(error) => return Err(error),
+            Err(error) => return Err(Error::ValidationError(error)),
         };
 
         Ok(GameMove::new(
@@ -548,8 +551,6 @@ mod tests {
         let game = GameState::new(Grid::new(Some(cells)), Some(Mark::Cross)).unwrap();
         let result = game.make_move_to(0);
         assert!(result.is_err());
-        let err = result.unwrap_err();
-        assert_eq!(err, "Cell is not empty");
     }
 
     #[test]

@@ -1,12 +1,13 @@
 //!    The TicTacToe struct represents a game of Tic Tac Toe that can be played by two players
 //!    and rendered with a renderer.
 
+use crate::logic::errors::Error;
 use crate::logic::{GameState, Grid, Mark};
 
 use super::players::Player;
 use super::renderers::Renderer;
 
-type ErrorHandler = dyn Fn(String);
+type ErrorHandler = dyn Fn(Error);
 
 /// TicTacToe game struct.
 pub struct TicTacToe<'a> {
@@ -31,9 +32,12 @@ impl<'a> TicTacToe<'a> {
         player2: &'a dyn Player,
         renderer: &'a dyn Renderer,
         error_handler: Option<Box<ErrorHandler>>,
-    ) -> Result<Self, String> {
+    ) -> Result<Self, Error> {
         if player1.get_mark() == player2.get_mark() {
-            return Err("Cannot play against each other".to_string());
+            return Err(Error::ConfigError(format!(
+                "Player 1 and Player 2 cannot have the same mark: {}",
+                player1.get_mark()
+            )));
         }
 
         Ok(TicTacToe {
@@ -65,7 +69,7 @@ impl<'a> TicTacToe<'a> {
                 Ok(new_game_state) => game_state = new_game_state.to_owned(),
                 Err(err) => {
                     if let Some(error_handler) = self.error_handler.as_ref() {
-                        error_handler(err);
+                        error_handler(Error::MoveError(err));
                     }
                 }
             }

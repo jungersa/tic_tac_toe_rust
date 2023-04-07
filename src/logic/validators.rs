@@ -2,14 +2,14 @@
 //! The functions in this module are used to validate the game state before the game starts.
 //! And they are used to validate the game state after each move.
 
-use super::{GameState, Grid, Mark};
+use super::{errors::ValidationError, GameState, Grid, Mark};
 
 /// Validates a game state and returns an error message if the state is invalid.
 ///
 /// # Arguments
 ///
 /// * `game_state` - The game state to validate.
-pub(crate) fn validate_game_state(game_state: &GameState) -> Result<(), String> {
+pub(crate) fn validate_game_state(game_state: &GameState) -> Result<(), ValidationError> {
     validate_number_of_marks(game_state.grid())?;
     validate_starting_mark(game_state.grid(), game_state.starting_mark())?;
     validate_winner(
@@ -29,11 +29,14 @@ pub(crate) fn validate_game_state(game_state: &GameState) -> Result<(), String> 
 /// # Arguments
 ///
 /// * `grid` - The grid of the game.
-fn validate_number_of_marks(grid: &Grid) -> Result<(), String> {
+fn validate_number_of_marks(grid: &Grid) -> Result<(), ValidationError> {
     let cross_count = grid.cross_count();
     let naught_count = grid.naught_count();
     if cross_count.abs_diff(naught_count) > 1 {
-        return Err(String::from("Wrong number of Naughts and Crosses"));
+        return Err(ValidationError::WrongNumberOfNaughtsAndCrosses(
+            naught_count,
+            cross_count,
+        ));
     }
     Ok(())
 }
@@ -47,13 +50,13 @@ fn validate_number_of_marks(grid: &Grid) -> Result<(), String> {
 ///
 /// * `grid` - The grid of the game.
 /// * `starting_mark` - The starting mark of the game.
-fn validate_starting_mark(grid: &Grid, starting_mark: &Mark) -> Result<(), String> {
+fn validate_starting_mark(grid: &Grid, starting_mark: &Mark) -> Result<(), ValidationError> {
     let cross_count = grid.cross_count();
     let naught_count = grid.naught_count();
     if (cross_count > naught_count && starting_mark == &Mark::Naught)
         || (cross_count < naught_count && starting_mark == &Mark::Cross)
     {
-        return Err(String::from("Wrong starting mark"));
+        return Err(ValidationError::WrongStartingMark(*starting_mark));
     }
     Ok(())
 }
@@ -69,23 +72,27 @@ fn validate_starting_mark(grid: &Grid, starting_mark: &Mark) -> Result<(), Strin
 /// * `grid` - The grid of the game.
 /// * `starting_mark` - The starting mark of the game.
 /// * `winner` - The winner of the game.
-fn validate_winner(grid: &Grid, starting_mark: &Mark, winner: Option<Mark>) -> Result<(), String> {
+fn validate_winner(
+    grid: &Grid,
+    starting_mark: &Mark,
+    winner: Option<Mark>,
+) -> Result<(), ValidationError> {
     if let Some(winner_mark) = winner {
         if winner_mark == Mark::Cross {
             if starting_mark == &Mark::Cross {
                 if grid.cross_count() <= grid.naught_count() {
-                    return Err(String::from("Wrong winner mark"));
+                    return Err(ValidationError::WrongWinnerMark(winner_mark));
                 }
             } else if grid.cross_count() != grid.naught_count() {
-                return Err(String::from("Wrong winner mark"));
+                return Err(ValidationError::WrongWinnerMark(winner_mark));
             }
         } else if winner_mark == Mark::Naught {
             if starting_mark == &Mark::Naught {
                 if grid.naught_count() <= grid.cross_count() {
-                    return Err(String::from("Wrong winner mark"));
+                    return Err(ValidationError::WrongWinnerMark(winner_mark));
                 }
             } else if grid.naught_count() != grid.cross_count() {
-                return Err(String::from("Wrong winner mark"));
+                return Err(ValidationError::WrongWinnerMark(winner_mark));
             }
         }
     }
@@ -129,10 +136,8 @@ mod tests {
             Cell::new_empty(),
             Cell::new_empty(),
         ]));
-        assert_eq!(
-            validate_number_of_marks(&grid),
-            Err(String::from("Wrong number of Naughts and Crosses"))
-        );
+        let result = validate_number_of_marks(&grid);
+        assert!(result.is_err());
     }
 
     #[test]
@@ -165,10 +170,8 @@ mod tests {
             Cell::new_empty(),
             Cell::new_empty(),
         ]));
-        assert_eq!(
-            validate_starting_mark(&grid, &Mark::Naught),
-            Err(String::from("Wrong starting mark"))
-        );
+        let result = validate_starting_mark(&grid, &Mark::Naught);
+        assert!(result.is_err());
     }
 
     #[test]

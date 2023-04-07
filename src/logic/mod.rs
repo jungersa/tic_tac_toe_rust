@@ -2,6 +2,7 @@
 //! It contains the models, which are the data structures used in the game.
 //! And it contains the validators, which are the functions that validate the game state.
 
+pub mod errors;
 pub mod models;
 mod validators;
 
