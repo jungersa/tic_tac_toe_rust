@@ -6,8 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.1](https://github.com/jungersa/tic_tac_toe_rust/compare/v0.3.0...v0.3.1) (2023-04-04)
+## [0.4.0](https://github.com/jungersa/tic_tac_toe_rust/compare/v0.3.1...v0.4.0) - 2023-04-05
 
+### Added
+
+* :heavy_plus_sign: Add this-error to dependencies ([90e7492](https://github.com/jungersa/tic_tac_toe_rust/commit/90e7492826457f65c0d798bd8b762a819244dc90))
+* :safety_vest: Change the return type of errors ([cce4588](https://github.com/jungersa/tic_tac_toe_rust/commit/cce4588caf200ed245515bffa0260e408caf3ad4))
+
+
+## [0.3.1](https://github.com/jungersa/tic_tac_toe_rust/compare/v0.3.0...v0.3.1) - 2023-04-04
 
 ### Fixed
 
