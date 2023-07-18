@@ -10,5 +10,5 @@ categories = ["games"]
 readme = "README.md"
 
 [dependencies]
-clap = { version = "4.3.11", features = ["derive"] }
+clap = { version = "4.3.14", features = ["derive"] }
 thiserror = "1.0"
